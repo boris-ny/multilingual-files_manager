@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const db = require('./utils/database');
 const redisClient = require('./utils/redis');
@@ -9,6 +10,7 @@ const port = 3000;
 
 // Add middleware to parse incoming requests with JSON payloads
 app.use(express.json());
+app.use(bodyParser.json());
 
 // Test the connection to the database
 db.authenticate()
@@ -30,8 +32,8 @@ redisClient.on('error', (err) => {
   console.error('Redis connection error:', err);
 });
 
-app.get('/hello', (req, res) => {
-  res.send('Hello World!');
+app.get('/welcome', (req, res) => {
+  res.json({ message: 'Welcome to the Files Manager App' }).status(200);
 });
 
 app.listen(port, () => {
