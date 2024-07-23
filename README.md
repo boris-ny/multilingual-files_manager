@@ -21,3 +21,15 @@ Databases:
 - Authentication: Use a secure hashing algorithm (e.g., bcrypt) for password storage. Consider libraries like Passport.js for user authentication.
 - i18n Libraries: Explore libraries like i18next for managing and implementing multilingual functionalities.
 - Testing Framework: Use a popular testing framework like Jest or Mocha for unit testing
+
+## How to Run
+
+```bash
+# Install dependencies
+npm install
+# Run docker-compose
+# !!!Make sure you have docker-compose installed
+docker-compose up -d
+# Run the application
+npm run dev
+```
