@@ -1,13 +1,7 @@
 const db = require('../utils/database');
 const { Model, DataTypes } = require('sequelize');
 
-class User extends Model {
-  id;
-  firstName;
-  lastName;
-  password;
-  email;
-}
+class User extends Model {}
 
 User.init(
   {
