@@ -1,4 +1,4 @@
-const db = require('./utils/database');
+const db = require('../utils/database');
 const { Model, DataTypes } = require('sequelize');
 
 class User extends Model {
@@ -12,9 +12,9 @@ class User extends Model {
 User.init(
   {
     id: {
-      type: DataTypes.UUIDV4,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
-      autoIncrement: true,
     },
     firstName: {
       type: DataTypes.STRING(50),
