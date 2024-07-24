@@ -1,7 +1,7 @@
 const { Router } = require('express');
-const { validJWTNeeded } = require('../utils/jsonwebtoken');
+const { validJWTNeeded } = require('../middleware/jsonwebtoken');
 const { getAllUsers, createUser } = require('../controllers/userController');
-const { validateRegistration } = require('../utils/validators');
+const { validateRegistration } = require('../middleware/validators');
 
 const router = Router();
 
