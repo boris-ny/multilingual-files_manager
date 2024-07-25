@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const User = require('../models/user.model');
+const fileQueue = require('../utils/queue');
 const File = require('../models/files.model');
 
 // Upload a file
@@ -13,15 +14,20 @@ const uploadFile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const file = await File.create({
-      originalName: req.file.originalname,
-      size: req.file.size,
+    const job = await fileQueue.add({
+      userId: user.id,
       filename: req.file.filename,
       filepath: req.file.path,
-      userId: user.id,
+      originalName: req.file.originalname,
+      size: req.file.size,
     });
 
-    res.status(201).json({ message: 'File uploaded successfully', file });
+    res.status(201).json({
+      message: 'File upload initiated',
+      jobId: job.id,
+      jobData: job.data,
+      jobstatus: job.getState(),
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal Files error' });
@@ -80,20 +86,22 @@ const updateFile = async (req, res, next) => {
     }
 
     const oldFilePath = file.filepath;
-    await fs.remove(oldFilePath, (err) => {
-      if (err) {
-        console.error(err);
-      }
-      console.log('Old file removed successfully');
+    // Add job to the queue
+    const job = await fileQueue.add('update', {
+      fileId: file.id,
+      newFilename: req.file.filename,
+      newFilepath: req.file.path,
+      newOriginalName: req.file.originalname,
+      newSize: req.file.size,
+      oldFilepath: oldFilePath,
     });
 
-    file.filename = req.file.filename;
-    file.filepath = req.file.path;
-    file.originalName = req.file.originalname;
-    file.size = req.file.size;
-    await file.save();
-
-    res.status(200).json({ message: 'File updated successfully', file });
+    res.status(200).json({
+      message: 'File updated initiated',
+      jobId: job.id,
+      jobData: job.data,
+      jobstatus: job.getState(),
+    });
   } catch (err) {
     console.error(err);
   }
@@ -110,17 +118,18 @@ const deleteFile = async (req, res, next) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    await fs.remove(file.filepath, (err) => {
-      if (err) {
-        console.error(err);
-      }
-      console.log('File removed successfully');
+    // Add job to the queue
+    const job = await fileQueue.add('delete', {
+      fileId: file.id,
+      filepath: file.filepath,
     });
+
+    await fs.remove(file.filepath);
     await file.destroy();
 
-    res.status(200).json({ message: 'File deleted successfully' });
+    res.status(200).json({ message: 'File deleted initiated', jobId: job.id });
   } catch (err) {
-    next(err);
+    console.error(err);
   }
 };
 

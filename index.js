@@ -1,12 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const dotenv = require('dotenv');
 const db = require('./utils/database');
-const redisClient = require('./utils/redis');
+const redisClient = require('./utils/queue');
 const { errors } = require('celebrate');
 const indexRoutes = require('./routes/index.routes');
 
-dotenv.config();
 const app = express();
 const port = 3000;
 
@@ -26,15 +24,6 @@ db.authenticate()
   .catch((err) => {
     console.error('Unable to connect to the database:', err);
   });
-
-// Test the connection to Redis
-redisClient.on('connect', () => {
-  console.log('Connected to Redis');
-});
-
-redisClient.on('error', (err) => {
-  console.error('Redis connection error:', err);
-});
 
 app.use('/', indexRoutes); // Add routes to the application
 
