@@ -6,7 +6,7 @@ const File = require('../models/files.model');
 // Upload a file
 const uploadFile = async (req, res) => {
   try {
-    const userId = req.params.userId; // Assuming userId is sent in the body
+    const userId = req.params.userId;
     const user = await User.findByPk(userId);
 
     if (!user) {
@@ -72,7 +72,7 @@ const readFile = async (req, res, next) => {
 const updateFile = async (req, res, next) => {
   try {
     const file = await File.findOne({
-      where: { filename: req.params.filename },
+      where: { filename: req.params.filename, userId: req.body.userId },
     });
 
     if (!file) {
@@ -80,7 +80,12 @@ const updateFile = async (req, res, next) => {
     }
 
     const oldFilePath = file.filepath;
-    await fs.remove(oldFilePath);
+    await fs.remove(oldFilePath, (err) => {
+      if (err) {
+        console.error(err);
+      }
+      console.log('Old file removed successfully');
+    });
 
     file.filename = req.file.filename;
     file.filepath = req.file.path;
@@ -90,7 +95,7 @@ const updateFile = async (req, res, next) => {
 
     res.status(200).json({ message: 'File updated successfully', file });
   } catch (err) {
-    next(err);
+    console.error(err);
   }
 };
 
@@ -105,7 +110,12 @@ const deleteFile = async (req, res, next) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    await fs.remove(file.filepath);
+    await fs.remove(file.filepath, (err) => {
+      if (err) {
+        console.error(err);
+      }
+      console.log('File removed successfully');
+    });
     await file.destroy();
 
     res.status(200).json({ message: 'File deleted successfully' });

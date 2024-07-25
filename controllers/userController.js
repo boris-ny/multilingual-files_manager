@@ -74,4 +74,44 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser, getAllUsers, loginUser };
+// Controller to get a new access token using a refresh token
+const getNewAccessToken = async (req, res) => {
+  const secret = env.JWT_SECRET;
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      return res.status(400).json({ message: 'Refresh token is required' });
+    }
+
+    // Verify the refresh token
+    jwt.verify(refreshToken, secret, async (err, decoded) => {
+      if (err) {
+        return res.status(403).json({ message: 'Invalid refresh token' });
+      }
+
+      // If the refresh token is valid, find the user based on the id in the decoded token
+      const user = await User.findOne({
+        where: { id: decoded.id },
+      });
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Generate a new access token
+      const newAccessToken = jwt.sign({ id: user.id }, secret, {
+        expiresIn: '1h',
+      });
+
+      // Send the new access token to the client
+      res.json({
+        accessToken: newAccessToken,
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { createUser, getAllUsers, loginUser, getNewAccessToken };
