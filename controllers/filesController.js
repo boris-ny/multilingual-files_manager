@@ -1,4 +1,3 @@
-const fs = require('fs-extra');
 const path = require('path');
 const User = require('../models/user.model');
 const fileQueue = require('../utils/queue');
@@ -75,7 +74,7 @@ const readFile = async (req, res, next) => {
 };
 
 // Update a file
-const updateFile = async (req, res, next) => {
+const updateFile = async (req, res) => {
   try {
     const file = await File.findOne({
       where: { filename: req.params.filename, userId: req.body.userId },
@@ -108,7 +107,7 @@ const updateFile = async (req, res, next) => {
 };
 
 // Delete a file
-const deleteFile = async (req, res, next) => {
+const deleteFile = async (req, res) => {
   try {
     const file = await File.findOne({
       where: { filename: req.params.filename },
@@ -123,9 +122,6 @@ const deleteFile = async (req, res, next) => {
       fileId: file.id,
       filepath: file.filepath,
     });
-
-    await fs.remove(file.filepath);
-    await file.destroy();
 
     res.status(200).json({ message: 'File deleted initiated', jobId: job.id });
   } catch (err) {

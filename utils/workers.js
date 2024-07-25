@@ -1,4 +1,4 @@
-const Queue = require('bull');
+const fs = require('fs-extra');
 const File = require('../models/files.model');
 const fileQueue = require('./queue');
 

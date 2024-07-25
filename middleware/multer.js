@@ -4,11 +4,8 @@ var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads/');
   },
-  filename: function (req, file, cb) {
-    var originalname = file.originalname;
-    var extension = originalname.split('.');
-    filename = Date.now() + '.' + extension[extension.length - 1];
-    cb(null, filename);
+  filename: function (req, file, callback) {
+    callback(null, Date.now() + '_' + file.originalname);
   },
 });
 

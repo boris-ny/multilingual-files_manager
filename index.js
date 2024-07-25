@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('./utils/database');
-const redisClient = require('./utils/queue');
 const { errors } = require('celebrate');
 const indexRoutes = require('./routes/index.routes');
 
