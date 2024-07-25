@@ -1,16 +1,18 @@
-const fs = require('fs-extra');
+/* eslint-disable no-unused-vars */
+const Queue = require('bull');
 const File = require('../models/files.model');
 const fileQueue = require('./queue');
+const fs = require('fs-extra');
 
 fileQueue.process('upload', async (job, done) => {
   try {
     const { userId, filename, filepath, originalName, size } = job.data;
 
     const file = await File.create({
-      originalName,
-      size,
       filename,
       filepath,
+      originalName,
+      size,
       userId,
     });
 
@@ -27,17 +29,12 @@ fileQueue.process('update', async (job, done) => {
       fileId,
       newFilename,
       newFilepath,
-      oldFilepath,
       newOriginalName,
       newSize,
+      oldFilepath,
     } = job.data;
 
-    await fs.remove(oldFilepath, (err) => {
-      if (err) {
-        console.error(err);
-      }
-      console.log('Old file removed successfully');
-    });
+    await fs.remove(oldFilepath);
 
     const file = await File.findByPk(fileId);
     file.filename = newFilename;
@@ -56,22 +53,8 @@ fileQueue.process('update', async (job, done) => {
 fileQueue.process('delete', async (job, done) => {
   try {
     const { fileId, filepath } = job.data;
-    // Simulate progress tracking
-    job.progress(25);
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate some work
 
-    job.progress(50);
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate some more work
-
-    job.progress(75);
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate even more work
-
-    await fs.remove(filepath, (err) => {
-      if (err) {
-        console.error(err);
-      }
-      console.log('File removed successfully');
-    });
+    await fs.remove(filepath);
 
     const file = await File.findByPk(fileId);
     await file.destroy();

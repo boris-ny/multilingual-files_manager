@@ -37,6 +37,6 @@ File.init(
   }
 );
 File.belongsTo(User, { as: 'user', foreignKey: 'userId' });
-User.hasMany(File, { as: 'files', foreignKey: 'userId' });
+User.hasMany(File, { as: 'file', foreignKey: 'userId' });
 
 module.exports = File;

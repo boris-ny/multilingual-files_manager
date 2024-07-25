@@ -13,7 +13,7 @@ const uploadFile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const job = await fileQueue.add({
+    const job = await fileQueue.add('upload', {
       userId: user.id,
       filename: req.file.filename,
       filepath: req.file.path,

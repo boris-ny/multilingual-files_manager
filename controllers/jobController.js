@@ -9,9 +9,9 @@ const getJobStatus = async (req, res) => {
   }
 
   const state = await job.getState();
-  const progress = job._progress;
+  const progress = job.progress();
 
-  res.status(200).json({ state, progress });
+  res.status(200).json({ state: state, progress: progress });
 };
 
 module.exports = { getJobStatus };
