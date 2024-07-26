@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const db = require('./utils/database');
+const i18n = require('./i18n/config');
+const sequelize = require('./utils/database');
 const { errors } = require('celebrate');
 const indexRoutes = require('./routes/index.routes');
 
@@ -13,8 +14,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(errors()); // Middleware to handle Joi validation errors
 
+app.use((req, res, next) => {
+  const language = req.query.lang || 'en'; // Default to English
+  i18n.setLocale(language);
+  next();
+});
+
 // Test the connection to the database
-db.authenticate()
+sequelize
+  .authenticate()
   .then(() => {
     console.log(
       'Connection to mysql database has been established successfully.'

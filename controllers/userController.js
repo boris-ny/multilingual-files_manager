@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user.model');
+const i18n = require('../i18n/config');
 const jwt = require('jsonwebtoken');
 const { env } = require('node:process');
 
@@ -9,21 +10,21 @@ const getAllUsers = async (req, res) => {
     return res.json({ data: users }).status(200);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal Users error' });
+    res.status(500).json({ message: i18n.__('Internal Users error') });
   }
 };
 
 const createUser = async (req, res) => {
   try {
     if (!req.body || !req.body.email) {
-      return res.status(400).json({ message: 'Email is required' });
+      return res.status(400).json({ message: i18n.__('Email is required') });
     }
     const existingUser = await User.findOne({
       where: { email: req.body.email },
     });
 
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: i18n.__('User already exists') });
     }
     if (req.body.password) {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -33,7 +34,7 @@ const createUser = async (req, res) => {
     return res.json({ message: 'User created', data: user }).status(201);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal Users error' });
+    res.status(500).json({ message: i18n.__('Internal Users error') });
   }
 };
 
@@ -70,7 +71,7 @@ const loginUser = async (req, res) => {
       .status(200);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal Users error' });
+    res.status(500).json({ message: i18n.__('Internal Users error') });
   }
 };
 
@@ -80,7 +81,9 @@ const getNewAccessToken = async (req, res) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) {
-      return res.status(400).json({ message: 'Refresh token is required' });
+      return res
+        .status(400)
+        .json({ message: i18n.__('Refresh token is required') });
     }
 
     // Verify the refresh token

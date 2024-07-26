@@ -5,14 +5,14 @@ services:
     image: mysql
     restart: always
     environment:
-      MYSQL_DATABASE: 'files-manager_db'
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: ${DATABASE}
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - '3306:3306'
+      - '${PORT}:${PORT}'
     expose:
-      - '3306'
+      - '${PORT}'
     volumes:
       - ./mysql:/var/lib/mysql
   redis:

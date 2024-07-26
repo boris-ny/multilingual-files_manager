@@ -1,20 +1,21 @@
 const { Sequelize } = require('sequelize');
+const { env } = require('node:process');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const db = new Sequelize({
+const sequelize = new Sequelize({
   dialect: 'mysql',
-  database: 'files-manager_db',
-  username: 'user',
-  password: 'password',
-  host: 'localhost',
-  port: 3306,
+  database: env.DATABASE,
+  username: env.MYSQL_USER,
+  password: env.MYSQL_PASSWORD,
+  host: env.HOST,
+  port: env.PORT,
   logging: false,
 });
 
-db.sync({
+sequelize.sync({
   alter: true,
 });
 
-module.exports = db;
+module.exports = sequelize;
